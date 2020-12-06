@@ -31,7 +31,9 @@ if (!array_key_exists($caminho, $rotas)) {
         $request = $creator->fromGlobals();
 
         $classeControladora = $rotas[$caminho];
-        $controlador = new $classeControladora();
+        /** @var ContainerInterface $container */
+        $container = require __DIR__ . '/../config/dependencies.php';
+        $controlador = $container->get($classeControladora);
         $resposta = $controlador->handle($request);
 
         foreach ($resposta->getHeaders() as $name => $values) {

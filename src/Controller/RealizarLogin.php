@@ -5,6 +5,7 @@ namespace Alura\Cursos\Controller;
 use Alura\Cursos\Entity\Usuario;
 use Alura\Cursos\Helper\FlashMessageTrait;
 use Alura\Cursos\Infra\EntityManagerCreator;
+use Doctrine\ORM\EntityManagerInterface;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,10 +17,10 @@ class RealizarLogin implements RequestHandlerInterface
 
     private $repositorioUsuarios;
 
-    public function __construct()
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $entityManager = (new EntityManagerCreator())->getEntityManager();
-        $this->repositorioUsuarios = $entityManager
+        $this->entityManager = $entityManager;
+        $this->repositorioUsuarios = $this->entityManager
         ->getRepository(Usuario::class);
     }
 

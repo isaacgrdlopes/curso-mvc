@@ -2,7 +2,7 @@
 
 namespace Alura\Cursos\Controller;
 
-use Alura\Cursos\Infra\EntityManagerCreator;
+use Doctrine\ORM\EntityManagerInterface;
 use Alura\Cursos\Entity\Curso;
 use Alura\Cursos\Helper\FlashMessageTrait;
 use Nyholm\Psr7\Response;
@@ -16,15 +16,14 @@ class Exclusao implements RequestHandlerInterface
 
     private $entityManager;
 
-    public function __construct()
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->entityManager = (new EntityManagerCreator)
-        ->getEntityManager();
+        $this->entityManager = $entityManager;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $id = $request->getQueryParams('id', FILTER_VALIDATE_INT);
 
         if (is_null($id) || $id === false) {
             $this->defineMensagem('danger', 'Curso inexistente');
