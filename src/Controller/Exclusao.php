@@ -23,20 +23,23 @@ class Exclusao implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $id = $request->getQueryParams('id', FILTER_VALIDATE_INT);
+        $queryString = $request->getQueryParams();
+        $id = filter_var(
+            $queryString['id'], 
+            FILTER_VALIDATE_INT
+        );
 
         if (is_null($id) || $id === false) {
             $this->defineMensagem('danger', 'Curso inexistente');
             return new Response(200, ['Location' => '/listar-cursos']);
+        } else {
+            $curso = $this->entityManager->getReference(Curso::class, $id);
+            $this->entityManager->remove($curso);
+            $this->entityManager->flush();
+    
+            $this->defineMensagem('success', 'Curso excluido com sucesso');
+    
+            return new Response(200, ['Location' => '/listar-cursos']);
         }
-
-        $curso = $this->entityManager->getReference(Curso::class, $id);
-        $this->entityManager->remove($curso);
-        $this->entityManager->flush();
-
-        $this->defineMensagem('success', 'Curso excluido com sucesso');
-
-        return new Response(200, ['Location' => '/listar-cursos']);
     }
-
 }
